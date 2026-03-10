@@ -1,31 +1,45 @@
-NAME = philo
+NAME		= philo
 
-SRCS = main.c
+CC				= cc
+CFLAGS			= -Werror -Wextra -Wall -g
+CFLAGS_SANITIZE	= -Wall -Wextra -Werror -g -L. -lpthread -g3 -fsanitize=thread -O3 -march=native
 
-OBJS = $(SRCS:.c=.o)
+INC			=	-I ./
 
-FLAGS = -Wall -Werror -Wextra -pthread
+SRC_PATH	=	./
+SRC			=	philo.c init.c utils.c simulation.c monitor.c get_set.c \
+				fork_ops.c mutexes.c get_set2.c
 
-CC = cc
-
-GREEN  := \033[0;32m
-RED    := \033[0;31m
-YELLOW := \033[1;33m
-RESET  := \033[0m
+OBJ_PATH	= obj/
+OBJ			= $(SRC:.c=.o)
+OBJS		= $(addprefix $(OBJ_PATH), $(OBJ))
 
 all: $(NAME)
 
+$(OBJ_PATH)%.o: $(SRC_PATH)%.c | $(OBJ_PATH)
+	$(CC) $(CFLAGS) -c $< -o $@ $(INC)
+
+$(OBJ_PATH):
+	mkdir $(OBJ_PATH)
+
 $(NAME): $(OBJS)
-	@$(CC) $(FLAGS) $(OBJS) -o $(NAME) 
-	@echo "$(GREEN)\n COMPILED $(RESET)\n"
+	@echo "Compiling philo..."
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(INC)
+	@echo "✅ Philo compiled!!!"
 
 clean:
-	@rm -f $(OBJS)
-	@echo "$(YELLOW) OBJECTS REMOVED $(RESET)"
+	@echo "Removing .o object files..."
+	rm -rf $(OBJ_PATH)
+
 fclean: clean
-	@rm -f $(NAME)
-	@echo "$(RED) PROGRAM REMOVED $(RESET)"
+	@echo "Removing binaries..."
+	rm -f $(NAME)
 
-re: fclean all 
+re: fclean all
 
-.Phone: all clean fclean re
+sanitize: $(OBJS)
+	@echo "Compiling philo with sanitizers..."
+	$(CC) $(CFLAGS_SANITIZE) -o $(NAME) $(OBJS) $(INC)
+	@echo "✅ Philo compiled with sanitize flags!!!"
+
+.PHONY: all re clean fclean
