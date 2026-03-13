@@ -1,26 +1,578 @@
-/* 
-number_of_philosophers time_to_die time_to_eat time_to_sleep
-[number_of_times_each_philosopher_must_eat]
+1. Thread (explicação simples)
 
-number_of_philosophers: The number of philosophers and also the number
-of forks.
-◦time_to_die (in milliseconds): If a philosopher has not started eating within
-time_to_die milliseconds since the start of their last meal or the start of the
-simulation, they die.
-◦time_to_eat (in milliseconds): The time it takes for a philosopher to eat.
-During that time, they will need to hold two forks.
-◦time_to_sleep (in milliseconds): The time a philosopher will spend sleeping.
-◦number_of_times_each_philosopher_must_eat (optional argument): If all
-philosophers have eaten at least number_of_times_each_philosopher_must_eat
-times, the simulation stops. If not specified, the simulation stops when a
-philosopher dies.
+Uma thread é como um trabalhador executando uma tarefa ao mesmo tempo que outros.
 
-About the logs of your program:
-•Any state change of a philosopher must be formatted as follows:
-◦timestamp_in_ms X has taken a fork
-◦timestamp_in_ms X is eating
-◦timestamp_in_ms X is sleeping
-◦timestamp_in_ms X is thinking
-◦timestamp_in_ms X died
-Replace timestamp_in_ms with the current timestamp in milliseconds
-and X with the philosopher number.
+Sem threads
+
+O programa faz tudo um de cada vez:
+
+filosofo1 come
+filosofo1 dorme
+filosofo1 pensa
+filosofo2 come
+filosofo2 dorme
+
+Isso não simula concorrência real.
+
+Com threads
+
+Agora todos os filósofos existem ao mesmo tempo.
+
+filosofo1 pensando
+filosofo3 comendo
+filosofo2 pegando garfo
+filosofo4 dormindo
+
+Todos executam em paralelo.
+
+No C usamos:
+
+pthread_create()
+
+Exemplo simples:
+
+void *routine(void *arg)
+{
+    printf("Hello from thread\n");
+    return NULL;
+}
+
+int main()
+{
+    pthread_t t;
+
+    pthread_create(&t, NULL, routine, NULL);
+    pthread_join(t, NULL);
+}
+2. Recurso compartilhado
+
+No philosophers temos:
+
+filósofos
+garfos
+
+Os garfos são compartilhados.
+
+Exemplo:
+
+P1 --- fork --- P2
+
+Então dois filósofos podem tentar pegar o mesmo garfo.
+
+Isso cria problemas.
+
+3. Race Condition (corrida)
+
+Race condition acontece quando duas threads acessam o mesmo dado ao mesmo tempo.
+
+Exemplo:
+
+fork disponível
+
+Thread 1 lê:
+
+fork = livre
+
+Thread 2 lê:
+
+fork = livre
+
+As duas pegam o garfo.
+
+💥 Problema: duas threads usando o mesmo recurso.
+
+4. Mutex (cadeado)
+
+Um mutex é um cadeado.
+
+Só uma thread pode entrar.
+
+Exemplo visual:
+
+garfo 🔒
+
+Fluxo:
+
+Thread tenta pegar garfo
+        │
+        ▼
+lock(mutex)
+        │
+        ▼
+usa garfo
+        │
+        ▼
+unlock(mutex)
+
+Em C:
+
+pthread_mutex_lock(&fork);
+
+e depois:
+
+pthread_mutex_unlock(&fork);
+5. Deadlock (travamento)
+
+Deadlock é quando todos ficam esperando para sempre.
+
+Exemplo clássico:
+
+P1 pega fork esquerdo
+P2 pega fork esquerdo
+P3 pega fork esquerdo
+P4 pega fork esquerdo
+P5 pega fork esquerdo
+
+Agora todos querem o fork direito.
+
+Mas:
+
+cada fork direito está na mão do vizinho
+
+Então:
+
+P1 espera P2
+P2 espera P3
+P3 espera P4
+P4 espera P5
+P5 espera P1
+
+🔒 Todos travam para sempre.
+
+Isso é deadlock.
+
+6. Starvation (fome infinita)
+
+Starvation acontece quando um filósofo nunca consegue comer.
+
+Exemplo:
+
+P1 sempre pega garfos primeiro
+P2 sempre perde
+
+Resultado:
+
+P2 nunca come
+P2 morre
+7. O que o projeto quer ensinar
+
+O projeto philosophers quer que você aprenda:
+
+threads
+mutex
+concorrência
+sincronização
+problemas de paralelismo
+8. Fluxo mental do programa
+
+Cada filósofo faz:
+
+while (ninguém morreu)
+{
+    pensar
+    pegar garfos
+    comer
+    soltar garfos
+    dormir
+}
+
+Ao mesmo tempo existe:
+
+monitor
+
+que verifica:
+
+alguém morreu?
+
+
+-----------------------------------------------------------------
+
+1. Ideia geral do projeto
+
+O Dining Philosophers Problem é um problema clássico de concorrência.
+
+Temos:
+
+N filósofos
+
+N garfos
+
+Cada filósofo precisa de 2 garfos para comer
+
+Estados possíveis:
+
+🍝 Eating
+
+😴 Sleeping
+
+🤔 Thinking
+
+Problemas que precisamos evitar:
+
+Race conditions
+
+Deadlocks
+
+Starvation
+
+No teu código:
+
+Cada filósofo = uma thread
+
+Cada garfo = um mutex
+
+Existe uma thread extra chamada monitor
+
+2. Estrutura principal do programa
+
+Existem 2 estruturas principais:
+
+t_table  → dados globais da simulação
+t_philo  → dados de cada filósofo
+3. Estrutura t_philo
+typedef struct s_philo
+{
+    int id;
+    pthread_t thread;
+
+Cada filósofo tem:
+
+um id
+
+uma thread
+
+Controle da última refeição
+long last_meal_ms;
+t_mutex last_meal_mutex;
+
+Guarda:
+
+última vez que o filósofo comeu
+
+O mutex protege contra:
+
+monitor lendo enquanto filósofo escreve
+Controle de refeições
+int meals_eaten;
+t_mutex meals_eaten_mutex;
+
+Serve para:
+
+verificar se já comeu o número obrigatório
+Garfo esquerdo
+bool left_fork;
+t_mutex l_fork_mutex;
+
+Cada filósofo possui seu garfo esquerdo.
+
+Garfo direito
+bool *right_fork;
+t_mutex *r_fork_mutex;
+
+O garfo direito é o garfo esquerdo do próximo filósofo.
+
+Por isso é ponteiro.
+
+Exemplo com 5 filósofos:
+
+P1: left fork = F1
+P1: right fork = F2
+
+P2: left fork = F2
+P2: right fork = F3
+Ponteiro para a mesa
+t_table *table;
+
+Isso permite que o filósofo acesse:
+
+tempos
+
+número de filósofos
+
+flags globais
+
+4. Estrutura t_table
+
+Essa estrutura guarda toda a simulação.
+
+typedef struct s_table
+{
+    int nb_philos;
+
+Número de filósofos.
+
+Tempos
+int time_to_die;
+int time_to_eat;
+int time_to_sleep;
+
+Exemplo:
+
+./philo 5 800 200 200
+Número mínimo de refeições
+int meals_required;
+
+Se for:
+
+-1 → infinito
+
+ou
+
+>= 0 → parar quando todos comerem
+Flag de morte
+bool someone_died;
+t_mutex someone_died_mutex;
+
+Quando alguém morre:
+
+someone_died = true
+
+E todas as threads param.
+
+Controle do filósofo mais faminto
+long min_last_meal;
+t_mutex min_last_meal_mutex;
+
+Guarda o menor last_meal.
+
+Isso ajuda o monitor a detectar quem está mais perto de morrer.
+
+Mutex de print
+t_mutex print_mutex;
+
+Serve para evitar:
+
+threads imprimirem ao mesmo tempo
+
+Sem isso, o output fica:
+
+1 is eating2 is sleeping3 has taken fork
+Thread do monitor
+pthread_t monitor_thread;
+
+Essa thread fica verificando se alguém morreu.
+
+Array de filósofos
+t_philo *philos;
+
+Lista com todos os filósofos.
+
+5. Fluxo principal do programa
+
+Fluxo típico:
+
+main
+ ↓
+init_data
+ ↓
+init_mutexes
+ ↓
+simulation
+ ↓
+destroy_mutexes
+ ↓
+free_data
+6. init_data()
+
+Responsável por:
+
+ler argumentos
+
+converter com ft_atoi
+
+inicializar t_table
+
+criar array de filósofos
+
+Também conecta os garfos:
+
+philo[i].right_fork = &philo[i+1].left_fork
+
+E o último filósofo:
+
+right_fork = &philo[0].left_fork
+7. simulation()
+
+Aqui acontece a magia.
+
+Passos:
+
+1️⃣ criar threads dos filósofos
+pthread_create(philo.thread, philosopher_routine)
+2️⃣ criar monitor
+pthread_create(monitor_thread, monitor_routine)
+3️⃣ esperar terminar
+pthread_join
+8. philosopher_routine()
+
+Loop principal do filósofo.
+
+Estrutura:
+
+while (!someone_died)
+{
+    think
+    take forks
+    eat
+    sleep
+}
+Pensar
+print_status("is thinking")
+Pegar garfos
+lock_forks()
+Comer
+set_last_meal()
+increment_meals_eaten()
+
+msleep(time_to_eat)
+Soltar garfos
+unlock_forks()
+Dormir
+msleep(time_to_sleep)
+9. Fork locking
+
+Funções importantes:
+
+lock_fork()
+lock_forks()
+unlock_forks()
+try_lock_forks()
+
+Isso controla os mutex dos garfos.
+
+Fluxo típico:
+
+lock left fork
+print "has taken fork"
+
+lock right fork
+print "has taken fork"
+10. Monitor thread
+
+Função:
+
+monitor_routine()
+
+Loop infinito:
+
+while (!someone_died)
+{
+    check philosophers
+}
+
+Para cada filósofo:
+
+current_time - last_meal
+
+Se:
+
+> time_to_die
+
+então:
+
+print "died"
+set_someone_died()
+
+E a simulação termina.
+
+11. Controle de tempo
+long get_time()
+
+Retorna:
+
+timestamp em ms
+12. Sleep inteligente
+msleep(long ms, t_table *table)
+
+Não usa apenas:
+
+usleep(ms * 1000)
+
+Porque precisa verificar:
+
+someone_died
+
+durante o sleep.
+
+13. Prints seguros
+print_status()
+
+Fluxo:
+
+lock print_mutex
+printf
+unlock print_mutex
+14. Fluxograma da Simulação
+
+Aqui está o fluxo completo do programa.
+
+                START
+                  │
+                  ▼
+            Parse arguments
+                  │
+                  ▼
+              init_data
+                  │
+                  ▼
+           init_mutexes
+                  │
+                  ▼
+             simulation
+                  │
+       ┌──────────┴──────────┐
+       ▼                     ▼
+create philosopher      create monitor
+      threads              thread
+       │                     │
+       ▼                     ▼
+ philosopher_routine     monitor_routine
+       │                     │
+       │                loop check
+       │             philosophers
+       │                     │
+       │           last_meal > time_to_die ?
+       │                     │
+       │                 YES ▼
+       │              print "died"
+       │                     │
+       │             someone_died = true
+       │                     │
+       ▼                     ▼
+ while (!someone_died)      END
+       │
+       ▼
+    THINK
+       │
+       ▼
+   lock forks
+       │
+       ▼
+     EAT
+(set_last_meal)
+(increment_meals)
+       │
+       ▼
+   unlock forks
+       │
+       ▼
+     SLEEP
+       │
+       ▼
+   repeat loop
+       │
+       ▼
+  someone_died ?
+       │
+      YES
+       │
+       ▼
+       END
+
+💡 Resumo mental simples
+
+Pensa assim:
+
+table = estado global
+philo = trabalhador (thread)
+fork = mutex
