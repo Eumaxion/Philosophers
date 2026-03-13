@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2026/03/13 14:44:15 by mlima-si          #+#    #+#              #
+#    Updated: 2026/03/13 14:44:16 by mlima-si         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 NAME		= philo
 
 CC				= cc
@@ -7,8 +19,8 @@ CFLAGS_SANITIZE	= -Wall -Wextra -Werror -g -L. -lpthread -g3 -fsanitize=thread -
 INC			=	-I ./
 
 SRC_PATH	=	./
-SRC			=	philo.c init.c utils.c simulation.c monitor.c get_set.c \
-				fork_ops.c mutexes.c get_set2.c
+SRC			=	philo.c init.c helpers.c simulation.c monitor_loop.c acessors.c \
+				fork_utils.c mutex.c acessors_2.c
 
 OBJ_PATH	= obj/
 OBJ			= $(SRC:.c=.o)

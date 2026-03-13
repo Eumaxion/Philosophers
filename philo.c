@@ -6,13 +6,13 @@
 /*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 17:16:15 by mlima-si          #+#    #+#             */
-/*   Updated: 2026/03/10 13:30:22 by mlima-si         ###   ########.fr       */
+/*   Updated: 2026/03/13 14:49:59 by mlima-si         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	check_args(int argc, char *argv[])
+static void	validate_args(int argc, char *argv[])
 {
 	int	i;
 
@@ -39,7 +39,7 @@ int	main(int argc, char *argv[])
 {
 	t_table	table;
 
-	check_args(argc, argv);
+	validate_args(argc, argv);
 	init_data(&table, argc, argv);
 	simulation(&table);
 	free_data(&table);
