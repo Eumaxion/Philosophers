@@ -6,7 +6,7 @@
 /*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 17:16:20 by mlima-si          #+#    #+#             */
-/*   Updated: 2026/03/13 14:44:25 by mlima-si         ###   ########.fr       */
+/*   Updated: 2026/03/13 17:33:23 by mlima-si         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ typedef struct s_philo
 
 typedef struct s_table
 {
-	int			nb_philos;
+	int			numbr_philos;
 	int			time_to_die;
 	int			time_to_eat;
 	int			time_to_sleep;
@@ -60,7 +60,6 @@ void	init_data(t_table *table, int argc, char *argv[]);
 int		simulation(t_table *table);
 void	*philosopher_routine(void *arg);
 void	*monitor_routine(void *arg);
-
 long	get_time(void);
 bool	get_someone_died(t_table *table);
 void	set_someone_died(t_table *table, t_philo *philo);
@@ -70,18 +69,15 @@ long	get_min_last_meal(t_table *table);
 void	set_min_last_meal(t_table *table, long value);
 int		get_meals_eaten(t_philo *philo);
 void	increment_meals_eaten(t_philo *philo);
-
 void	lock_fork(t_philo *philo, t_mutex *fork);
 void	lock_forks(t_philo *philo, t_table *table);
 void	unlock_forks(t_philo *philo);
-bool	try_lock_forks(t_philo *philo);
-
+bool	lock_fk(t_philo *philo);
 bool	check_arg_is_int(char *nptr);
 int		ft_atoi(char *str);
 void	free_data(t_table *table);
 void	print_status(t_philo *philo, char *msg);
 void	msleep(long ms, t_table *table);
-
 int		init_mutexes(t_table *table);
 void	destroy_mutexes(t_table *table);
 

@@ -6,7 +6,7 @@
 /*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:45:02 by mlima-si          #+#    #+#             */
-/*   Updated: 2026/03/13 14:50:43 by mlima-si         ###   ########.fr       */
+/*   Updated: 2026/03/13 17:32:58 by mlima-si         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	init_mutexes(t_table *table)
 	int	i;
 
 	i = 0;
-	while (i < table->nb_philos)
+	while (i < table->numbr_philos)
 	{
 		if (pthread_mutex_init(&table->philos[i].last_meal_mutex, NULL) != 0)
 			return (EXIT_FAILURE);
@@ -41,7 +41,7 @@ void	destroy_mutexes(t_table *table)
 	int	i;
 
 	i = 0;
-	while (i < table->nb_philos)
+	while (i < table->numbr_philos)
 	{
 		pthread_mutex_destroy(&table->philos[i].last_meal_mutex);
 		pthread_mutex_destroy(&table->philos[i].meals_eaten_mutex);

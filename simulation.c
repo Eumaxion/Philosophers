@@ -6,7 +6,7 @@
 /*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:47:53 by mlima-si          #+#    #+#             */
-/*   Updated: 2026/03/13 14:47:55 by mlima-si         ###   ########.fr       */
+/*   Updated: 2026/03/13 17:32:58 by mlima-si         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	eating(t_philo *philo, t_table *table)
 		usleep(1);
 	if (get_someone_died(table))
 		return (EXIT_FAILURE);
-	while (!try_lock_forks(philo))
+	while (!lock_fk(philo))
 	{
 		if (get_someone_died(table))
 			return (EXIT_FAILURE);
@@ -62,7 +62,7 @@ void	*philosopher_routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	if (philo->table->nb_philos == 1)
+	if (philo->table->numbr_philos == 1)
 	{
 		print_status(philo, "has taken a fork");
 		msleep(philo->table->time_to_die, philo->table);
@@ -91,7 +91,7 @@ int	simulation(t_table *table)
 	int	i;
 
 	i = 0;
-	while (i < table->nb_philos)
+	while (i < table->numbr_philos)
 	{
 		if (pthread_create(&table->philos[i].thread, NULL, philosopher_routine,
 				&table->philos[i]) != 0)
@@ -108,7 +108,7 @@ int	simulation(t_table *table)
 		return (EXIT_FAILURE);
 	}
 	i = 0;
-	while (i < table->nb_philos)
+	while (i < table->numbr_philos)
 		pthread_join(table->philos[i++].thread, NULL);
 	pthread_join(table->monitor_thread, NULL);
 	return (EXIT_SUCCESS);

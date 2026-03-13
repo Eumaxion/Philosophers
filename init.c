@@ -6,7 +6,7 @@
 /*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:44:50 by mlima-si          #+#    #+#             */
-/*   Updated: 2026/03/13 14:50:32 by mlima-si         ###   ########.fr       */
+/*   Updated: 2026/03/13 17:32:58 by mlima-si         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static int	right_philo_index(t_philo *philo)
 {
-	return ((philo->id) % (philo->table->nb_philos));
+	return ((philo->id) % (philo->table->numbr_philos));
 }
 
 static void	init_philosophers(t_table *table)
@@ -23,14 +23,14 @@ static void	init_philosophers(t_table *table)
 	long	current_time;
 
 	current_time = get_time();
-	table->philos = malloc(sizeof(t_philo) * table->nb_philos);
+	table->philos = malloc(sizeof(t_philo) * table->numbr_philos);
 	if (!table->philos)
 	{
 		printf("Error: Memory allocation for philosophers failed.\n");
 		exit(EXIT_FAILURE);
 	}
 	i = 0;
-	while (i < table->nb_philos)
+	while (i < table->numbr_philos)
 	{
 		memset(&table->philos[i], 0, sizeof(t_philo));
 		table->philos[i].id = i + 1;
@@ -49,7 +49,7 @@ static void	init_philosophers(t_table *table)
 static void	init_table(t_table *table, int argc, char *argv[])
 {
 	memset(table, 0, sizeof(t_table));
-	table->nb_philos = ft_atoi(argv[1]);
+	table->numbr_philos = ft_atoi(argv[1]);
 	table->time_to_die = ft_atoi(argv[2]);
 	table->time_to_eat = ft_atoi(argv[3]);
 	table->time_to_sleep = ft_atoi(argv[4]);

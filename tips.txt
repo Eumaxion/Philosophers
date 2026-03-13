@@ -297,7 +297,7 @@ Essa estrutura guarda toda a simulação.
 
 typedef struct s_table
 {
-    int nb_philos;
+    int numbr_philos;
 
 Número de filósofos.
 
@@ -436,7 +436,7 @@ Funções importantes:
 lock_fork()
 lock_forks()
 unlock_forks()
-try_lock_forks()
+lock_fk()
 
 Isso controla os mutex dos garfos.
 

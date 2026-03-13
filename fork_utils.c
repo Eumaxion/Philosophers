@@ -6,7 +6,7 @@
 /*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:44:43 by mlima-si          #+#    #+#             */
-/*   Updated: 2026/03/13 14:50:56 by mlima-si         ###   ########.fr       */
+/*   Updated: 2026/03/13 17:31:15 by mlima-si         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	unlock_forks(t_philo *philo)
 	}
 }
 
-static bool	try_lock_forks_right_first(t_philo *philo)
+static bool	lock_fk_right_first(t_philo *philo)
 {
 	pthread_mutex_lock(philo->r_fork_mutex);
 	if (*(philo->right_fork) == false)
@@ -56,7 +56,7 @@ static bool	try_lock_forks_right_first(t_philo *philo)
 	return (false);
 }
 
-static bool	try_lock_forks_left_first(t_philo *philo)
+static bool	lock_fk_left_first(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->l_fork_mutex);
 	if (philo->left_fork == false)
@@ -78,10 +78,10 @@ static bool	try_lock_forks_left_first(t_philo *philo)
 	return (false);
 }
 
-bool	try_lock_forks(t_philo *philo)
+bool	lock_fk(t_philo *philo)
 {
 	if (philo->id % 2 == 0)
-		return (try_lock_forks_right_first(philo));
+		return (lock_fk_right_first(philo));
 	else
-		return (try_lock_forks_left_first(philo));
+		return (lock_fk_left_first(philo));
 }

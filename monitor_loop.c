@@ -6,7 +6,7 @@
 /*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/13 14:44:57 by mlima-si          #+#    #+#             */
-/*   Updated: 2026/03/13 14:44:58 by mlima-si         ###   ########.fr       */
+/*   Updated: 2026/03/13 17:32:58 by mlima-si         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static bool	all_philos_finished(t_table *table)
 	int	i;
 
 	i = 0;
-	while (i < table->nb_philos)
+	while (i < table->numbr_philos)
 	{
 		if (table->meals_required == -1 || get_meals_eaten(&table->philos[i])
 			< table->meals_required)
@@ -35,7 +35,7 @@ static void	monitor_loop(t_table *table, int i, long last_meal,
 	{
 		i = 0;
 		min_last_meal = LONG_MAX;
-		while (i < table->nb_philos)
+		while (i < table->numbr_philos)
 		{
 			if (table->meals_required != -1
 				&& get_meals_eaten(&table->philos[i]) >= table->meals_required)
