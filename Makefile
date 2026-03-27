@@ -6,15 +6,15 @@
 #    By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/27 11:11:49 by mlima-si          #+#    #+#              #
-#    Updated: 2026/03/27 11:18:35 by mlima-si         ###   ########.fr        #
+#    Updated: 2026/03/27 12:11:14 by mlima-si         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
-SCR = main.c
+SCR = main.c utils.c
 
-OBJ = $(SRC:.c=.o)
+OBJ = $(SCR:.c=.o)
 
 CFLAGS += -Wall -Werror -Wextra
 
