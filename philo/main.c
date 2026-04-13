@@ -6,7 +6,7 @@
 /*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/27 11:11:55 by mlima-si          #+#    #+#             */
-/*   Updated: 2026/03/27 13:31:00 by mlima-si         ###   ########.fr       */
+/*   Updated: 2026/04/13 19:57:45 by mlima-si         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,30 @@ static int	parse_args(int ac, char **av)
 	return (0);
 }
 
+int main(int argc, char **argv)
+{
+	t_data data;
+	t_philo *philos;
+	pthread_t monitor_thread;
+	int i;
+
+	if (parse_args(argc, argv))
+		return (1);
+	init_data(&data, argv);
+	philos = init_philos(&data);
+	i = 0;
+	while (i < data.num_philos)
+		pthread_create(&philos[i++].thread, NULL, philo_routine, &philos[i]);
+	pthread_create(&monitor_thread, NULL, monitor, philos);
+	i = 0;
+	while (i < data.num_philos)
+		pthread_join(philos[i++].thread, NULL);
+	pthread_join(monitor_thread, NULL);
+
+	cleanup(&data, philos);
+}
+
+/* 
 int	main(int ac, char **av)
 {
 	t_table	*table;
@@ -45,4 +69,4 @@ int	main(int ac, char **av)
 	simulation();
 	destry();
 	return (0);
-}
+} */
