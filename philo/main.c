@@ -6,11 +6,27 @@
 /*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/27 11:11:55 by mlima-si          #+#    #+#             */
-/*   Updated: 2026/04/13 19:57:45 by mlima-si         ###   ########.fr       */
+/*   Updated: 2026/04/16 17:19:01 by mlima-si         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static int	is_number(char *s)
+{
+	int i;
+
+	i = 0;
+	if (!s[0])
+		return (0);
+	while (s[i])
+	{
+		if (s[i] < '0' || s[i] > '9')
+			return (0);
+		i++;
+	}
+	return (1);
+}
 
 static int	parse_args(int ac, char **av)
 {
@@ -24,49 +40,31 @@ static int	parse_args(int ac, char **av)
 	}
 	i = 1;
 	while (i < ac)
-	{
-		if (ft_atoi(av[i]) < 0)
-		{
-			printf("all arguments should be integers and positives\n");
-			return (1);
-		}
-		i++;
-	}
+		if (!is_number(av[i++]))
+			return (printf("Error\n"), 1);
 	return (0);
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	t_data data;
-	t_philo *philos;
-	pthread_t monitor_thread;
-	int i;
+	t_data		data;
+	pthread_t	monitor_thread;
+	int			i;
 
 	if (parse_args(argc, argv))
 		return (1);
-	init_data(&data, argv);
-	philos = init_philos(&data);
-	i = 0;
-	while (i < data.num_philos)
-		pthread_create(&philos[i++].thread, NULL, philo_routine, &philos[i]);
-	pthread_create(&monitor_thread, NULL, monitor, philos);
-	i = 0;
-	while (i < data.num_philos)
-		pthread_join(philos[i++].thread, NULL);
+	init_data(&data, argc, argv);
+	init_philos(&data);
+	data.start_time = get_time();
+	i = -1;
+	while (++i < data.num_philos)
+		pthread_create(&data.philos[i].thread, NULL,
+			philo_routine, &data.philos[i]);
+	pthread_create(&monitor_thread, NULL, monitor, &data);
+	i = -1;
+	while (++i < data.num_philos)
+		pthread_join(data.philos[i].thread, NULL);
 	pthread_join(monitor_thread, NULL);
-
-	cleanup(&data, philos);
+	cleanup(&data);
+	return 0;
 }
-
-/* 
-int	main(int ac, char **av)
-{
-	t_table	*table;
-
-	if (parse_args(ac, av))
-		return (1);
- 	init_args(table, ac, av);
-	simulation();
-	destry();
-	return (0);
-} */
