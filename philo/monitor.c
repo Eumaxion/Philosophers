@@ -61,7 +61,7 @@ void	*monitor(void *arg)
 		}
 		if (check_meals(data))
 			return (NULL);
-		usleep(500);
+		usleep(10);
 	}
 	return (NULL);
 }
