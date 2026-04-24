@@ -15,15 +15,11 @@ static void eat(t_philo *p)
 	put_forks(p);
 }
 
-void *philo_routine(t_data *table, t_philo *p)
+void *philo_routine(void *philo)
 {
-	if (p->data->num_philos == 1)
-	{
-		pthread_mutex_lock(p->left_fork);
-		print_status(p, "has taken a fork");
-		smart_sleep(p->data->time_to_die, p->data);
-		return (NULL);
-	}
+	t_philo *p;
+
+	p = (t_philo *)philo;
 	if (p->id % 2 == 0)
 		usleep(1000);
 	while (!simulation_finished(p->data))
@@ -32,11 +28,11 @@ void *philo_routine(t_data *table, t_philo *p)
 		if (!simulation_finished(p->data))
 			break;
 		print_status(p, "is thinking");
-		usleep(table->time_to_sleep * 1000);
+		usleep(p->data->time_to_sleep * 1000);
 		if (!simulation_finished(p->data))
 			break;
 		print_status(p, "is sleeping");
-		if (table->num_philos % 2 && p->id % 2)
+		if (p->data->num_philos % 2 && p->id % 2)
 			usleep(1000);
 	}
 	return NULL;

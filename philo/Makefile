@@ -6,13 +6,13 @@
 #    By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/27 11:11:49 by mlima-si          #+#    #+#              #
-#    Updated: 2026/04/16 16:37:11 by mlima-si         ###   ########.fr        #
+#    Updated: 2026/04/24 16:56:27 by mlima-si         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
-SCR = main.c utils.c init_args.c monitor.c forks_mutex.c philo_routine.c 
+SCR = main.c utils.c init_args.c monitor.c forks_mutex.c philo_routine.c utils2.c
 
 OBJ = $(SCR:.c=.o)
 

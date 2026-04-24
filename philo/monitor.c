@@ -46,8 +46,8 @@ int	check_meals(t_data *data)
 
 void	*monitor(void *arg)
 {
+	int	i;
 	t_data *data;
-	int i;
 
 	data = (t_data *)arg;
 	while (!simulation_finished(data))
@@ -57,9 +57,11 @@ void	*monitor(void *arg)
 		{
 			if (check_death(data, i))
 				return (NULL);
+			if (check_meals(data))
+				return (NULL);
 			i++;
 		}
-		if (check_meals(data))
+		if (data->simulation_end)
 			return (NULL);
 		usleep(10);
 	}
