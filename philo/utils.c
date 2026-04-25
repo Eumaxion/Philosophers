@@ -6,40 +6,48 @@
 /*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 13:18:07 by mlima-si          #+#    #+#             */
-/*   Updated: 2026/04/16 17:21:32 by mlima-si         ###   ########.fr       */
+/*   Updated: 2026/04/25 19:45:30 by mlima-si         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long get_time(void)
+long	get_time(void)
 {
-	struct timeval tv;
+	struct timeval	tv;
+
 	gettimeofday(&tv, NULL);
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void print_status(t_philo *p, char *msg)
+void	print_status(t_philo *p, char *msg)
 {
+	int	current_time;
+
 	pthread_mutex_lock(&p->data->print_mutex);
+	current_time = get_time() - p->data->start_time;
 	if (!simulation_finished(p->data))
-		printf("%ld %d %s\n",
-			get_time() - p->data->start_time,
-			p->id, msg);
+	{
+		ft_putnbr_fd(current_time, 1);
+		write(1, " ", 1);
+		ft_putnbr_fd(p->id, 1);
+		write(1, " ", 1);
+		ft_putstr_fd(msg, 1);
+	}
 	pthread_mutex_unlock(&p->data->print_mutex);
 }
 
-void	cleanup(t_data *data)
+int	error_exit(int n_err)
 {
-	int i;
-
-	i = 0;
-	while (i < data->num_philos)
-		pthread_mutex_destroy(&data->forks[i++]);
-	pthread_mutex_destroy(&data->print_mutex);
-	pthread_mutex_destroy(&data->death_mutex);
-	free(data->forks);
-	free(data->philos);
+	if (n_err == ARGS_ERROR)
+		write(2, "Invalid arguments\n", 18);
+	else if (n_err == THREAD_ERROR)
+		write(2, "Thread init error\n", 19);
+	else if (n_err == MALLOC_ERROR)
+		write(2, "Malloc fail\n", 13);
+	else if (n_err == MUTEX_ERROR)
+		write(2, "Mutex init error\n", 18);
+	return (1);
 }
 
 int	ft_atoi(const char *nptr)

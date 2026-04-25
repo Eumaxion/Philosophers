@@ -6,7 +6,7 @@
 /*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/24 16:46:58 by mlima-si          #+#    #+#             */
-/*   Updated: 2026/04/24 18:05:51 by mlima-si         ###   ########.fr       */
+/*   Updated: 2026/04/25 19:40:03 by mlima-si         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	free_forks(t_data *data, int n)
 
 static int	is_number(char *s)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (!s[0])
@@ -43,19 +43,6 @@ static int	is_number(char *s)
 	return (1);
 }
 
-int	error_exit(int n_err)
-{
-	if (n_err == ARGS_ERROR)
-		write(2, "Invalid arguments\n", 18);
-	else if (n_err == THREAD_ERROR)
-		write(2, "Thread init error\n", 19);
-	else if (n_err == MALLOC_ERROR)
-		write(2, "Malloc fail\n", 13);
-	else if (n_err == MUTEX_ERROR)
-		write(2, "Mutex init error\n", 18);
-	return (1);
-}
-
 int	parse_args(int ac, char **av)
 {
 	int	i;
@@ -63,7 +50,7 @@ int	parse_args(int ac, char **av)
 	if (ac != 5 && ac != 6)
 	{
 		write(2, "Usage: ./philo [number_of_philosophers] [time_to_die] [time_\
-			to_eat] [time_to_sleep] [number_of_times_each_philosopher_must_eat]\n", 132);
+to_eat] [time_to_sleep] [number_of_times_each_philosopher_must_eat]\n", 129);
 		return (1);
 	}
 	i = 1;
@@ -73,4 +60,39 @@ int	parse_args(int ac, char **av)
 			return (error_exit(ARGS_ERROR));
 	}
 	return (0);
+}
+
+void	ft_putstr_fd(char *s, int fd)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		write(fd, &s[i], 1);
+		i++;
+	}
+	return ;
+}
+
+void	ft_putnbr_fd(int n, int fd)
+{
+	int	number;
+
+	if (n == -2147483648)
+	{
+		write(fd, "-2147483648", 11);
+		return ;
+	}
+	if (n < 0)
+	{
+		write(fd, "-", 1);
+		n *= -1;
+	}
+	if (n > 9)
+	{
+		ft_putnbr_fd(n / 10, fd);
+	}
+	number = ((n % 10) + '0');
+	write(fd, &number, 1);
 }

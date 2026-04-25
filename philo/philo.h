@@ -1,18 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/25 19:43:17 by mlima-si          #+#    #+#             */
+/*   Updated: 2026/04/25 19:44:26 by mlima-si         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILO_H
 # define PHILO_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <sys/time.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <pthread.h>
+# include <sys/time.h>
 
 # define ARGS_ERROR 1
 # define THREAD_ERROR 2
 # define MALLOC_ERROR 3
 # define MUTEX_ERROR 5
 
-typedef struct s_data t_data;
+typedef struct s_data	t_data;
 
 typedef struct s_philo
 {
@@ -36,7 +48,7 @@ typedef struct s_data
 	long			start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_mutex;
-	pthread_mutex_t	death_mutex;
+	pthread_mutex_t	lock_mutex;
 	t_philo			*philos;
 }	t_data;
 
@@ -49,10 +61,13 @@ void	*monitor(void *arg);
 int		simulation_finished(t_data *data);
 void	put_forks(t_philo *p);
 void	take_forks(t_philo *p);
+void	ft_putstr_fd(char *s, int fd);
+void	ft_putnbr_fd(int n, int fd);
 long	ft_atol(const char *nptr);
 int		ft_atoi(const char *nptr);
 void	print_status(t_philo *p, char *msg);
 void	free_forks(t_data *data, int n);
+int		error_exit(int n_err);
 void	cleanup(t_data *data);
 
 #endif

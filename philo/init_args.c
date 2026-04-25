@@ -6,30 +6,29 @@
 /*   By: mlima-si <mlima-si@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/27 12:54:14 by mlima-si          #+#    #+#             */
-/*   Updated: 2026/04/24 18:04:56 by mlima-si         ###   ########.fr       */
+/*   Updated: 2026/04/25 19:36:50 by mlima-si         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-
 static int	init_data(t_data *data, int ac, char **av)
 {
-	int i;
-
 	data->num_philos = ft_atoi(av[1]);
 	data->time_to_die = ft_atol(av[2]);
 	data->time_to_eat = ft_atol(av[3]);
 	data->time_to_sleep = ft_atol(av[4]);
 	data->must_eat = -1;
 	data->start_time = get_time();
-	if (data->num_philos <= 0 || data->time_to_die <= 0 
-		|| data->time_to_sleep <= 0)
+	if (data->num_philos <= 0 || data->time_to_die <= 0
+		|| data->time_to_eat <= 0 || data->time_to_sleep <= 0)
 		return (ARGS_ERROR);
 	if (ac == 6)
+	{
 		data->must_eat = ft_atol(av[5]);
 		if (data->must_eat <= 0)
 			return (ARGS_ERROR);
+	}
 	data->simulation_end = 0;
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->num_philos);
 	if (!data->forks)
@@ -49,7 +48,7 @@ int	init_forks(t_data *data)
 	{
 		if (pthread_mutex_init(&data->forks[i], NULL) != 0)
 		{
-			free_forks(data, i);	
+			free_forks(data, i);
 			return (MUTEX_ERROR);
 		}
 		i++;
@@ -59,12 +58,12 @@ int	init_forks(t_data *data)
 
 static int	init_philos(t_data *data)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (pthread_mutex_init(&data->print_mutex, NULL) != 0)
 		return (MUTEX_ERROR);
-	if (pthread_mutex_init(&data->death_mutex, NULL) != 0)
+	if (pthread_mutex_init(&data->lock_mutex, NULL) != 0)
 		return (MUTEX_ERROR);
 	while (i < data->num_philos)
 	{
@@ -90,7 +89,7 @@ int	init_args(t_data *data, int ac, char **av)
 		return (error_exit(data_checker));
 	fork_checker = init_forks(data);
 	if (fork_checker != 0)
-		return (error_exit());
+		return (error_exit(fork_checker));
 	philo_checker = init_philos(data);
 	if (philo_checker != 0)
 		return (error_exit(philo_checker));
